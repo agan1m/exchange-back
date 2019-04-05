@@ -14,9 +14,25 @@ router.post(
 			.normalizeEmail(),
 		body('password')
 			.trim()
-			.isLength({ min: 5 }),
+			.isLength({ min: 5 })
+			.withMessage('Пароль должен быть длиннее 5 символов'),
 	],
 	authController.signup
+);
+
+router.post(
+	'/signin',
+	[
+		body('email')
+			.isEmail()
+			.withMessage('Введите почту')
+			.normalizeEmail(),
+		body('password')
+			.trim()
+			.isLength({ min: 5 })
+			.withMessage('Пароль должен быть длиннее 5 символов'),
+	],
+	authController.signin
 );
 
 module.exports = router;
