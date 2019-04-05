@@ -20,7 +20,7 @@ app.use(
 	cors({
 		allowedHeaders: ['Content-Type', 'Token'],
 		origin: 'http://localhost:3333',
-		credentials: true,
+		credentials: true
 	})
 );
 
@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 app.use('/auth', authRoute);
 
 // connect to db
-initializeDb((db) => {
+initializeDb.sync().then((result) => {
 	app.server.listen(process.env.PORT || config.port, () => {
 		console.log(`Started on port ${app.server.address().port}`);
 	});

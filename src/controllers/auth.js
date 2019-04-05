@@ -1,4 +1,5 @@
 const { validationResult } = require('express-validator/check');
+const User = require('../models/user');
 
 exports.signup = (req, res, next) => {
 	const { email, password } = req.body;
@@ -7,10 +8,18 @@ exports.signup = (req, res, next) => {
 	if (!errors.isEmpty()) {
 		res.json({
 			errors: errors.array(),
-			message: 'failer',
+			message: 'failer'
 		});
 	}
-	res.json({
-		message: 'success',
-	});
+	User.create({
+		email: email,
+		password: password
+	})
+		.then((user) => {
+			console.log(user);
+			res.json({
+				message: 'success'
+			});
+		})
+		.catch((err) => console.log(err));
 };
