@@ -1,9 +1,14 @@
-import { Router } from 'express';
+const jwt = require('jsonwebtoken');
 
-export default ({ config, db }) => {
-	let routes = Router();
+exports.verifyJWTToken = (req, res, next) => {
+	const token = req.get('Token');
+	return new Promise((resolve, reject) => {
+		jwt.verify(token, 'superpupersecret', (err, decodedToken) => {
+			if (err || !decodedToken) {
+				return reject(err);
+			}
 
-	// add middleware here
-
-	return routes;
-}
+			resolve(decodedToken);
+		});
+	});
+};
