@@ -16,6 +16,10 @@ const User = sequelize.define('user', {
 	secondname: {
 		type: Sequelize.STRING,
 	},
+	avatar: {
+		type: Sequelize.STRING,
+		defaultValue: null,
+	}
 });
 
 module.exports = User;

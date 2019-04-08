@@ -1,14 +1,16 @@
-const jwt = require('jsonwebtoken');
+const util = require('../lib/util');
 
-exports.verifyJWTToken = (req, res, next) => {
+
+
+exports.verifyJWT_MW = (req, res, next) => {
 	const token = req.get('Token');
-	return new Promise((resolve, reject) => {
-		jwt.verify(token, 'superpupersecret', (err, decodedToken) => {
-			if (err || !decodedToken) {
-				return reject(err);
-			}
 
-			resolve(decodedToken);
+	util.verifyJWTToken(token)
+		.then((decodedToken) => {
+			req.user = decodedToken;
+			next();
+		})
+		.catch((err) => {
+			res.status(401).json({ message: 'Invalid auth token provided.' });
 		});
-	});
 };

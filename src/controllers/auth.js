@@ -72,7 +72,7 @@ exports.signin = (req, res, next) => {
 						});
 					}
 					const token = jwt.sign({ email: user.email, id: user.id }, 'superpupersecret', {
-						expiresIn: '5min',
+						expiresIn: '15min',
 					});
 					return res.json({
 						isSuccess: true,

@@ -1,8 +1,11 @@
 const http = require('http');
+const path = require('path');
+const uuidv4 = require('uuid/v4');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const initializeDb = require('./db');
 const middleware = require('./middleware');
 const config = require('./config.json');
@@ -12,7 +15,21 @@ const profileRoute = require('./routes/profile');
 
 let app = express();
 app.server = http.createServer(app);
-
+const fileStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'images');
+	},
+	filename: (req, file, cb) => {
+		cb(null, uuidv4() + '-' + file.originalname);
+	},
+});
+const fileFilter = (req, file, cb) => {
+	if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
 // logger
 app.use(morgan('dev'));
 
@@ -26,10 +43,11 @@ app.use(
 );
 
 app.use(bodyParser.json());
-
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('file'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/auth', authRoute);
 
-app.use('/profile', middleware.verifyJWTToken, profileRoute);
+app.use('/profile', middleware.verifyJWT_MW, profileRoute);
 
 // connect to db
 initializeDb.sync().then((result) => {

@@ -38,9 +38,11 @@
     "express-validator": "^5.3.1",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.8.0",
+    "multer": "^1.4.1",
     "mysql2": "^1.6.5",
     "resource-router-middleware": "^0.6.0",
-    "sequelize": "^5.2.12"
+    "sequelize": "^5.2.12",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
