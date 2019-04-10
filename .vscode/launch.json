@@ -7,10 +7,23 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Launch Program",
-			"program": "${workspaceFolder}/src/index.js",
+			"name": "Node: Nodemon",
+			"runtimeExecutable": "nodemon",
+			"program": "${workspaceRoot}/src/index.js",
 			"restart": true,
-			"runtimeExecutable": "nodemon"
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"autoAttachChildProcesses": true
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach",
+			"runtimeExecutable": "nodemon",
+			"port": 8085,
+			"restart": true,
+			"localRoot": "${workspaceFolder}/src",
+      		"remoteRoot": "./dist"
 		}
 	]
 }
