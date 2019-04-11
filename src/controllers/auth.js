@@ -25,8 +25,10 @@ exports.signup = async (req, res, next) => {
 			});
 		}
 		const hashPass = await bcrypt.hash(password, 12);
-		user = await User.create({ email: email, password: hashPass });
-		const bill = await Bill.create(user);
+		User.create({ email: email, password: hashPass }).then(user => {
+			user.createBill()
+		});
+		//const bill = await user.setBill();
 		
 		res.json({
 			data: user,

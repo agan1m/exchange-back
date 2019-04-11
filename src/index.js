@@ -1,6 +1,5 @@
 const http = require('http');
 const path = require('path');
-const childProcess = require('child_process');
 const uuidv4 = require('uuid/v4');
 const express = require('express');
 const cors = require('cors');
@@ -57,6 +56,15 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/auth', authRoute);
 
 app.use('/profile', middleware.verifyJWT_MW, profileRoute);
+
+app.get('/images/:file', (req, res, next) => {
+	const reg = new RegExp('(?:jpg|jpeg|png)$');
+	if (reg.test(req.originalUrl)) {
+		res.sendFile(path.join(__dirname, '..', req.originalUrl));
+	} else {
+		next();
+	}
+});
 
 User.hasOne(Bill);
 Bill.belongsTo(User);
