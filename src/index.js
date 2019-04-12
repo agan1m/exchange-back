@@ -12,8 +12,10 @@ const config = require('./config.json');
 const debug = require('debug')('express-sequelize');
 const authRoute = require('./routes/auth');
 const profileRoute = require('./routes/profile');
+const imagesRoute = require('./routes/image');
 const User = require('./models/user');
 const Bill = require('./models/bill');
+const Post = require('./models/post');
 
 let app = express();
 app.server = http.createServer(app);
@@ -53,21 +55,28 @@ app.use(
 	multer({ storage: fileStorage, fileFilter: fileFilter }).single('file')
 );
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use('/auth', authRoute);
-
 app.use('/profile', middleware.verifyJWT_MW, profileRoute);
+app.use('/images', imagesRoute);
 
-app.get('/images/:file', (req, res, next) => {
-	const reg = new RegExp('(?:jpg|jpeg|png)$');
-	if (reg.test(req.originalUrl)) {
-		res.sendFile(path.join(__dirname, '..', req.originalUrl));
-	} else {
-		next();
-	}
+app.use((err, req, res, next) => {
+	console.error(err);
+	next(err);
 });
 
-User.hasOne(Bill);
-Bill.belongsTo(User);
+app.use((err, req, res, next) => {
+	res.status(err.status || 500).json({
+		isSuccess: false,
+		message: err.message
+	});
+});
+
+User.belongsTo(Bill);
+Bill.hasOne(User);
+
+User.hasMany(Post);
+Post.belongsTo(User);
 
 initializeDb.sync().then((result) => {
 	app.server.listen(process.env.PORT || config.port, () => {
