@@ -10,7 +10,7 @@ exports.change = async (req, res, next) => {
 	if (!name && !secondname) {
 		return res.json({
 			message: 'failer',
-			isSuccess: false
+			isSuccess: false,
 		});
 	}
 	try {
@@ -18,7 +18,7 @@ exports.change = async (req, res, next) => {
 		currentUser = await currentUser.update({ ...req.body });
 		return res.json({
 			isSuccess: true,
-			data: currentUser
+			data: currentUser,
 		});
 	} catch (error) {
 		next(error);
@@ -29,18 +29,16 @@ exports.uploadImage = async (req, res, next) => {
 	try {
 		let user;
 		const image = await Jimp.read(req.file.path);
-		await image
-			.resize(185, 185)
-			.write(path.join(__dirname, '..', '..', 'images', req.file.filename));
+		await image.resize(185, 185).write(path.join(__dirname, '..', '..', 'images', req.file.filename));
 
 		user = await User.findByPk(req.user.id);
-		if (req.file) {
+		if (user.avatar) {
 			fileHelper.deleteFile(user.avatar);
 		}
 		user = await user.update({ avatar: req.file.path });
 		return res.json({
 			data: user,
-			isSuccess: true
+			isSuccess: true,
 		});
 	} catch (error) {
 		next(error);

@@ -11,39 +11,35 @@ exports.signup = async (req, res, next) => {
 		return res.json({
 			errors: errors.array(),
 			message: 'failer',
-			isSuccess: false
+			isSuccess: false,
 		});
 	}
 	try {
 		let user = await User.findOne({
-			where: { email: email }
+			where: { email: email },
 		});
 		if (user) {
 			return res.json({
 				message: 'Пользователь с таким email уже существует',
-				isSuccess: false
+				isSuccess: false,
 			});
 		}
 		const hashPass = await bcrypt.hash(password, 12);
 		user = await User.create({ email: email, password: hashPass });
 		const bill = await user.createBill();
-		const token = jwt.sign(
-			{ email: user.email, id: user.id },
-			'superpupersecret',
-			{
-				expiresIn: '15min'
-			}
-		);
+		const token = jwt.sign({ email: user.email, id: user.id }, 'superpupersecret', {
+			expiresIn: '15min',
+		});
 		const userModel = {
 			avatar: user.avatar,
 			id: user.id,
 			name: user.name,
 			secondname: user.secondname,
-			email: user.email
+			email: user.email,
 		};
 		return res.json({
 			data: { user: userModel, bill, token },
-			isSuccess: true
+			isSuccess: true,
 		});
 	} catch (error) {
 		next(error);
@@ -58,7 +54,7 @@ exports.signin = async (req, res, next) => {
 		return res.json({
 			errors: errors.array(),
 			isSuccess: false,
-			message: 'failer'
+			message: 'failer',
 		});
 	}
 
@@ -66,45 +62,47 @@ exports.signin = async (req, res, next) => {
 		user = await User.findOne({
 			where: { email: email },
 			exclude: ['createdAt', 'updatedAt'],
-			include: [{ model: Bill }]
+			include: [{ model: Bill }],
 		});
 		console.log(user);
 		if (!user) {
 			return res.json({
 				message: 'Пользователя с таким email не существует',
-				isSuccess: false
+				isSuccess: false,
 			});
 		}
 		let result = await bcrypt.compare(password, user.password);
 		if (!result) {
 			return res.json({
 				isSuccess: false,
-				message: 'Не верный пароль'
+				message: 'Не верный пароль',
 			});
 		}
-		const token = jwt.sign(
-			{ email: user.email, id: user.id },
-			'superpupersecret',
-			{
-				expiresIn: '15min'
-			}
-		);
+		const token = jwt.sign({ email: user.email, id: user.id }, 'superpupersecret', {
+			expiresIn: '15min',
+		});
 		const userModel = {
 			avatar: user.avatar,
 			id: user.id,
 			name: user.name,
 			secondname: user.secondname,
-			email: user.email
+			email: user.email,
 		};
 		return res.json({
 			isSuccess: true,
 			data: {
 				token: token,
 				user: userModel,
-				bill: user.bill
-			}
+				bill: user.bill,
+			},
 		});
 	} catch (error) {
 		next(error);
 	}
+};
+
+exports.logout = (req, res, next) => {
+	res.json({
+		isSuccess: true,
+	});
 };
