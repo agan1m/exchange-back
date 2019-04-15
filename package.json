@@ -7,6 +7,7 @@
     "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "debug": "nodemon --inspect ./src/index.js",
+    "generate": "node ./generators/index.js",
     "start": "node dist",
     "prestart": "npm run -s build",
     "test": "eslint src"
@@ -52,6 +53,7 @@
     "babel-preset-stage-0": "^6.5.0",
     "debug": "^4.1.1",
     "eslint": "^3.1.1",
+    "faker": "^4.1.0",
     "nodemon": "^1.9.2"
   }
 }
