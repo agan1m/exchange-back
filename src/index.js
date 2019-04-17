@@ -60,7 +60,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/auth', authRoute);
 app.use('/profile', middleware.verifyJWT_MW, profileRoute);
 app.use('/images', imagesRoute);
-app.use('/posts', postsRoute);
+app.use('/posts', middleware.verifyJWT_MW, postsRoute);
 
 app.use((err, req, res, next) => {
 	console.error(err);
