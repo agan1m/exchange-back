@@ -14,9 +14,11 @@ const authRoute = require('./routes/auth');
 const profileRoute = require('./routes/profile');
 const imagesRoute = require('./routes/image');
 const postsRoute = require('./routes/posts');
+const tradesRoute = require('./routes/trades');
 const User = require('./models/user');
 const Bill = require('./models/bill');
 const Post = require('./models/post');
+const Trade = require('./models/trade');
 
 let app = express();
 app.server = http.createServer(app);
@@ -26,14 +28,10 @@ const fileStorage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		cb(null, uuidv4() + '-' + file.originalname);
-	}
+	},
 });
 const fileFilter = (req, file, cb) => {
-	if (
-		file.mimetype === 'image/png' ||
-		file.mimetype === 'image/jpg' ||
-		file.mimetype === 'image/jpeg'
-	) {
+	if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
 		cb(null, true);
 	} else {
 		cb(null, false);
@@ -47,20 +45,19 @@ app.use(
 	cors({
 		allowedHeaders: ['Content-Type', 'Token'],
 		origin: 'http://localhost:3333',
-		credentials: true
+		credentials: true,
 	})
 );
 
 app.use(bodyParser.json());
-app.use(
-	multer({ storage: fileStorage, fileFilter: fileFilter }).single('file')
-);
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('file'));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/auth', authRoute);
 app.use('/profile', middleware.verifyJWT_MW, profileRoute);
 app.use('/images', imagesRoute);
 app.use('/posts', middleware.verifyJWT_MW, postsRoute);
+app.use('/trades', middleware.verifyJWT_MW, tradesRoute);
 
 app.use((err, req, res, next) => {
 	console.error(err);
@@ -70,7 +67,7 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
 	res.status(err.status || 500).json({
 		isSuccess: false,
-		message: err.message
+		message: err.message,
 	});
 });
 
@@ -79,6 +76,9 @@ Bill.hasOne(User);
 
 User.hasMany(Post);
 Post.belongsTo(User);
+
+Trade.belongsTo(User);
+User.hasOne(Trade);
 
 initializeDb.sync().then((result) => {
 	const io = require('./socket').init(app.server);
